@@ -1,0 +1,16 @@
+{
+  "name": "wind-relay",
+  "version": "1.0.0",
+  "description": "Wind Messenger relay server - connects peers, stores nothing",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["messaging", "p2p", "relay"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
