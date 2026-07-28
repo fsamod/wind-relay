@@ -2,12 +2,11 @@ const express = require('express');
 const app = express();
 app.use(express.json());
 
-// In-memory peer registry: pubkey_hex -> { ip, port, registered_at }
-// Cleaned up on restart (no persistent storage)
+// this will svae on mem
 const peers = new Map();
 const PEER_TIMEOUT = 3600000; // 1 hour: if no heartbeat, remove entry
 
-// Cleanup: expire old peers every 5 minutes
+// cleans up da expired things
 setInterval(() => {
     const now = Date.now();
     for (const [pubkey, peer] of peers.entries()) {
@@ -18,9 +17,7 @@ setInterval(() => {
     }
 }, 300000);
 
-// Register: client announces itself
-// POST /register
-// Body: { pubkey: "hex...", ip: "1.2.3.4", port: 9878 }
+// helps to announce clinets to eachother
 app.post('/register', (req, res) => {
     const { pubkey, ip, port } = req.body;
     if (!pubkey || !ip || !port) {
@@ -31,9 +28,7 @@ app.post('/register', (req, res) => {
     res.json({ ok: true });
 });
 
-// Lookup: client asks where is peer X?
-// GET /lookup/:pubkey
-// Response: { ip, port } or 404
+// reponse
 app.get('/lookup/:pubkey', (req, res) => {
     const { pubkey } = req.params;
     const peer = peers.get(pubkey);
@@ -44,9 +39,7 @@ app.get('/lookup/:pubkey', (req, res) => {
     res.json({ ip: peer.ip, port: peer.port });
 });
 
-// Heartbeat: keep peer alive (prevents timeout)
-// POST /heartbeat
-// Body: { pubkey: "hex..." }
+//ni tiemout
 app.post('/heartbeat', (req, res) => {
     const { pubkey } = req.body;
     const peer = peers.get(pubkey);
@@ -57,9 +50,7 @@ app.post('/heartbeat', (req, res) => {
     res.json({ ok: true });
 });
 
-// Deregister: client going offline
-// POST /deregister
-// Body: { pubkey: "hex..." }
+//when it goes offline
 app.post('/deregister', (req, res) => {
     const { pubkey } = req.body;
     peers.delete(pubkey);
